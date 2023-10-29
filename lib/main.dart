@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'countdown_timer.dart';
+import 'package:flutter_countdown_timer/countdown_timer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,11 +11,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Countdown Timer Demo',
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const CountdownTimerDemo(),
+      home: const CountdownTimer(),
     );
   }
 }

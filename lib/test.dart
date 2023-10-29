@@ -11,10 +11,8 @@ class CountdownTimer extends StatefulWidget {
 
 class CountdownTimerState extends State<CountdownTimer> {
   late Timer timer;
-  int start = 60; // Set to 60 seconds (1 minute)
-  int maxTime = 3600; // Set to 3600 seconds (1 hour)
+  int start = 30;
   var isTimerOn = false;
-  bool isPaused = false;
 
   void startTimer() {
     const oneSec = Duration(seconds: 1);
@@ -25,28 +23,13 @@ class CountdownTimerState extends State<CountdownTimer> {
           setState(() {
             timer.cancel();
           });
-        } else if (!isPaused) {
+        } else {
           setState(() {
             start--;
           });
         }
       },
     );
-  }
-
-  void togglePause() {
-    setState(() {
-      isPaused = !isPaused;
-    });
-  }
-
-  void stopTimer() {
-    timer.cancel();
-    setState(() {
-      isTimerOn = false;
-      isPaused = false;
-      start = 60; // Reset to 1 minute
-    });
   }
 
   @override
@@ -57,12 +40,8 @@ class CountdownTimerState extends State<CountdownTimer> {
 
   @override
   Widget build(BuildContext context) {
-    int hours = start ~/ 3600;
-    int minutes = (start % 3600) ~/ 60;
-    int seconds = start % 60;
-
-    String timeDisplay =
-        '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    final ButtonStyle style =
+        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
 
     Color sliderColor = start <= 5 ? Colors.red : const Color(0xfff24FFCC);
 
@@ -95,7 +74,7 @@ class CountdownTimerState extends State<CountdownTimer> {
                   size: MediaQuery.of(context).size.width * 0.84,
                   customColors: CustomSliderColors(
                     trackColor: const Color(0xfff364643),
-                    progressBarColor: sliderColor,
+                    progressBarColor: sliderColor, // Change slider color
                     dotColor: Colors.black,
                     shadowColor: Colors.grey.shade600,
                   ),
@@ -108,7 +87,7 @@ class CountdownTimerState extends State<CountdownTimer> {
                   ),
                 ),
                 min: 0,
-                max: maxTime.toDouble(),
+                max: 60,
                 initialValue: start.toDouble(),
                 onChange: (double value) {
                   setState(() {
@@ -120,15 +99,15 @@ class CountdownTimerState extends State<CountdownTimer> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        timeDisplay,
+                        '${start.round()}',
                         style: TextStyle(
-                          fontSize: 56,
-                          color: sliderColor,
+                          fontSize: 120,
+                          color: sliderColor, // Change number color
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const Text(
-                        "hr           min           sec",
+                        "seconds",
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.white,
@@ -141,62 +120,44 @@ class CountdownTimerState extends State<CountdownTimer> {
               ),
             ),
             const SizedBox(
-              height: 100,
+              height: 140,
             ),
-            ElevatedButton(
-              onPressed: () {
+            GestureDetector(
+              onTap: () {
                 if (isTimerOn) {
-                  if (isPaused) {
-                    togglePause();
-                  } else {
-                    togglePause();
-                  }
+                  timer.cancel();
+                  setState(() {
+                    isTimerOn = false;
+                    start = 30;
+                  });
                 } else {
                   isTimerOn = true;
                   startTimer();
                 }
               },
-              style: ElevatedButton.styleFrom(
-                  fixedSize:
-                      Size.fromWidth(MediaQuery.of(context).size.width * 0.65),
-                  backgroundColor: isTimerOn
-                      ? isPaused
-                          ? Color(0xfff24FFCC)
-                          : Colors.amber
-                      : Color(0xfff24FFCC),
-                  shadowColor: Colors.black.withOpacity(0.5),
-                  padding: const EdgeInsets.symmetric(vertical: 12.0)),
-              child: Text(
-                isTimerOn
-                    ? isPaused
-                        ? 'Resume'
-                        : 'Pause'
-                    : 'Start',
-                style: const TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: stopTimer,
-              style: ElevatedButton.styleFrom(
-                fixedSize:
-                    Size.fromWidth(MediaQuery.of(context).size.width * 0.65),
-                backgroundColor: Colors.red,
-                shadowColor: Colors.black.withOpacity(0.5),
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
-              ),
-              child: const Text(
-                'Stop',
-                style: TextStyle(
-                  fontSize: 24,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
+              child: Container(
+                alignment: Alignment.center,
+                width: MediaQuery.of(context).size.width * 0.65,
+                decoration: BoxDecoration(
+                    color:
+                        isTimerOn ? Colors.redAccent : const Color(0xfff24FFCC),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        offset: const Offset(2, 4),
+                      ),
+                    ]),
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Text(
+                  isTimerOn ? 'Stop' : 'Start',
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: isTimerOn ? Colors.white : Colors.black,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
